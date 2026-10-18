@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__branch__branch"
+    ]
+  },
+  "env": {
+    "ENABLE_TOOL_SEARCH": "false"
+  }
+}

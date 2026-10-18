@@ -1,0 +1,13 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Name=Personal App
+GenericName=Personal Assistant
+Comment=Deadlines, email triage and Brightspace sync
+Exec=/home/spiralsky/projects/personal-app/kde/app/launch.sh
+Icon=user-home
+Categories=Education;Office;
+Keywords=campus;brightspace;deadlines;email;study;
+StartupNotify=false
+StartupWMClass=campus-assistant
+X-GNOME-Autostart-enabled=true

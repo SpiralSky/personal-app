@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "branch": {
+      "command": "node",
+      "args": [
+        "--import",
+        "/home/spiralsky/projects/ai-workflow/framework/node_modules/tsx/dist/loader.mjs",
+        "/home/spiralsky/projects/ai-workflow/framework/src/server.ts"
+      ]
+    }
+  }
+}

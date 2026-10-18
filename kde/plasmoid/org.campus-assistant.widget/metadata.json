@@ -1,0 +1,18 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "shianastrophysics@gmail.com",
+                "Name": "spiralsky"
+            }
+        ],
+        "Description": "Personal App — deadlines and mail at a glance",
+        "Icon": "user-home",
+        "Id": "org.campus-assistant.widget",
+        "License": "MIT",
+        "Name": "Personal App",
+        "Version": "0.1.0",
+        "Website": "http://localhost:8765/ui/"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
