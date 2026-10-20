@@ -76,22 +76,22 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "anthropic", specifier = ">=1.12.1" },
-    { name = "fastapi", specifier = ">=0.142.4" },
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "playwright", specifier = ">=1.63.0" },
-    { name = "pydantic", specifier = ">=2.13.5" },
-    { name = "pypdf", specifier = ">=6.19.0" },
-    { name = "python-docx", specifier = ">=1.2.0" },
-    { name = "python-pptx", specifier = ">=1.0.2" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.54.0" },
+    { name = "anthropic", specifier = "~=1.12" },
+    { name = "fastapi", specifier = "~=0.142" },
+    { name = "httpx", specifier = "~=0.28" },
+    { name = "playwright", specifier = "~=1.63" },
+    { name = "pydantic", specifier = "~=2.13" },
+    { name = "pypdf", specifier = "~=6.19" },
+    { name = "python-docx", specifier = "~=1.2" },
+    { name = "python-pptx", specifier = "~=1.0" },
+    { name = "uvicorn", extras = ["standard"], specifier = "~=0.54" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "pytest", specifier = ">=9.1.1" },
-    { name = "pytest-cov", specifier = ">=7.1.0" },
+    { name = "httpx", specifier = "~=0.28" },
+    { name = "pytest", specifier = "~=9.1" },
+    { name = "pytest-cov", specifier = "~=7.1" },
 ]
 
 [[package]]

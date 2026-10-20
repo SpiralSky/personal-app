@@ -33,7 +33,7 @@ step "Browser for Brightspace sync (Playwright Chromium)"
 uv run playwright install chromium
 
 step "Web UI (npm ci && npm run build)"
-(cd web && npm ci --no-audit --no-fund && npm run build)
+(cd web && npm ci --no-fund && npm run build)
 
 if [[ $want_service == 1 ]]; then
   step "Background service"

@@ -6,3 +6,5 @@ web/node_modules/
 web/dist/
 *.AppImage
 HANDOFF.md
+research_notes/
+reports/

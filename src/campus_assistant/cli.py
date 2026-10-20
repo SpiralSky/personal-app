@@ -232,10 +232,8 @@ def main() -> int:
     s.set_defaults(fn=cmd_upcoming)
 
     args = p.parse_args()
-    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
-                        format="%(asctime)s %(levelname)s %(name)s: %(message)s")
-    if not args.verbose:
-        logging.getLogger("httpx").setLevel(logging.WARNING)
+    from ._logging import configure_logging
+    configure_logging(verbose=args.verbose)
     return args.fn(Config(), args)
 
 
