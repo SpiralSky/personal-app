@@ -38,7 +38,7 @@ class BrightspaceClient:
         url = self._url(path, params)
         for attempt in range(4):
             await asyncio.sleep(self.delay)
-            resp = await self.request.get(url, headers={"Accept": "application/json"}, fail_on_status_code=False)
+            resp = await self.request.get(url, headers={"Accept": "application/json"}, fail_on_status_code=False, timeout=30_000)
             if resp.status in (429, 502, 503, 504):
                 wait = 5 * 2**attempt
                 log.warning("%s → %s, retrying in %ss", path, resp.status, wait)
@@ -70,7 +70,8 @@ class BrightspaceClient:
     async def check_session(self) -> bool:
         try:
             resp = await self._get("/d2l/api/lp/1.0/users/whoami")
-        except Exception:
+        except Exception as exc:
+            log.warning("check_session %s: %s", self.host, exc)
             return False
         if resp.ok and "json" in resp.headers.get("content-type", ""):
             self.user = await resp.json()

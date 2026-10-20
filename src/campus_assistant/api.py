@@ -43,6 +43,9 @@ class RecentErrorsHandler(logging.Handler):
             self.handleError(record)
 
 
+_bg_tasks: set[asyncio.Task] = set()
+
+
 def create_app(cfg: Config | None = None, store: Store | None = None, schedule: bool = True,
                analyze: bool | None = None) -> FastAPI:
     root = logging.getLogger()
@@ -59,6 +62,9 @@ def create_app(cfg: Config | None = None, store: Store | None = None, schedule: 
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
+        from .llm import PROVIDER_OVERRIDES, CUSTOM_PROVIDER_CONFIGS
+        PROVIDER_OVERRIDES.update(store.get_meta("llm:provider_overrides", {}))
+        CUSTOM_PROVIDER_CONFIGS.update(store.get_meta("llm:custom_provider_configs", {}))
         loop_task = asyncio.create_task(runner.schedule_loop()) if schedule else None
         yield
         if loop_task:
@@ -132,10 +138,11 @@ def create_app(cfg: Config | None = None, store: Store | None = None, schedule: 
         row["label"] = store.get_label(item_id)
         return row
 
-    def _window(days: int, include_overdue_days: int) -> tuple[str, str]:
+    def _window(days: int, past_days: int) -> tuple[str, str]:
+        """Return (start, end) ISO strings: past_days behind now to days ahead."""
         now = datetime.now(UTC)
         fmt = "%Y-%m-%dT%H:%M:%SZ"
-        return (now - timedelta(days=include_overdue_days)).strftime(fmt), (now + timedelta(days=days)).strftime(fmt)
+        return (now - timedelta(days=past_days)).strftime(fmt), (now + timedelta(days=days)).strftime(fmt)
 
     @app.get("/upcoming")
     def upcoming(days: int = 30, overdue_days: int = 0):
@@ -228,13 +235,23 @@ def create_app(cfg: Config | None = None, store: Store | None = None, schedule: 
         req = req or AnalyzeRequest()
         if analysis.running:
             return {"started": False, "running": True}
-        asyncio.create_task(analysis.run_now(**req.model_dump()))
+        task = asyncio.create_task(analysis.run_now(**req.model_dump()))
+        _bg_tasks.add(task)
+        task.add_done_callback(_bg_tasks.discard)
+        task.add_done_callback(
+            lambda t: log.error("Background analysis failed: %s", t.exception())
+            if not t.cancelled() and t.exception() else None
+        )
         return {"started": True}
 
     @app.get("/llm/status")
     async def llm_status():
         from .llm import llm_status as status_of
         return await status_of()
+
+    class ModelListRequest(BaseModel):
+        endpoint: str
+        api_key: str | None = None
 
     class CustomProviderConfig(BaseModel):
         endpoint: str
@@ -278,30 +295,32 @@ def create_app(cfg: Config | None = None, store: Store | None = None, schedule: 
         CUSTOM_PROVIDER_CONFIGS.pop(req.task, None)
 
         if req.custom:
-            # Set custom provider
             CUSTOM_PROVIDER_CONFIGS[req.task] = {
                 "endpoint": req.custom.endpoint,
                 "model": req.custom.model,
                 "api_key": req.custom.api_key,
                 "thinking": req.custom.thinking,
             }
-            PROVIDER_OVERRIDES.pop(req.task, None)  # Clear preset override
+            PROVIDER_OVERRIDES.pop(req.task, None)
+            store.set_meta("llm:provider_overrides", dict(PROVIDER_OVERRIDES))
+            store.set_meta("llm:custom_provider_configs", dict(CUSTOM_PROVIDER_CONFIGS))
             return {"task": req.task, "provider": "custom", "config": req.custom.model_dump()}
         elif req.preset:
-            # Set preset provider
             PROVIDER_OVERRIDES[req.task] = req.preset
+            store.set_meta("llm:provider_overrides", dict(PROVIDER_OVERRIDES))
+            store.set_meta("llm:custom_provider_configs", dict(CUSTOM_PROVIDER_CONFIGS))
             return {"task": req.task, "provider": req.preset}
         else:
             raise HTTPException(400, "Must provide either 'preset' or 'custom'")
 
-    @app.get("/settings/llm/models")
-    async def get_llm_models(endpoint: str, api_key: str | None = None):
+    @app.post("/settings/llm/models")
+    async def get_llm_models(req: ModelListRequest):
         """Fetch available models from an OpenAI-compatible provider."""
         import httpx
-        headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+        headers = {"Authorization": f"Bearer {req.api_key}"} if req.api_key else {}
         try:
             async with httpx.AsyncClient(timeout=10, headers=headers) as client:
-                resp = await client.get(f"{endpoint.rstrip('/')}/models")
+                resp = await client.get(f"{req.endpoint.rstrip('/')}/models")
                 resp.raise_for_status()
                 data = resp.json()
                 models = [m.get("id") for m in data.get("data", []) if m.get("id")]
