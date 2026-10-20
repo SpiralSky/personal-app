@@ -3,10 +3,10 @@ _Files touched: web/src/api/client.ts, web/src/App.tsx, web/src/components/, web
 
 ## HIGH
 
-- **`App.tsx:42`** — No React error boundary anywhere. One unhandled render error blanks the entire app with no recovery.
-- **`client.ts:162–168` / `Inbox.tsx:50–53`** — `useAction` has no `onError`; mutation failures (sync, login, analyze, label) silently discarded. User gets no feedback.
-- **`Settings.tsx:52–73`** — "Fetch Models" and "Save" errors both swallowed. A failed save looks like success (panel closes immediately).
-- **`Inbox.tsx:32` vs `Inbox.tsx:387`** — `useLabel()` called twice in `Detail`; two independent mutation instances; `saving` prop tracks outer, inner is invisible.
+- ~~**`App.tsx:42`**~~ — _fixed: `ErrorBoundary` class wraps `<Routes>`; shows error + reload button_
+- ~~**`client.ts:162–168` / `Inbox.tsx:50–53`**~~ — _fixed: `NotifyErrorCtx` in `notify.tsx`; `useAction` and `useLabel` call it on error; App renders dismissable red banner_
+- ~~**`Settings.tsx:52–73`**~~ — _fixed: `handleSave` passes `onSuccess` callback so panel only closes on success; `save.reset()` on cancel; `save.isError` and `fetchModels.isError` shown inline_
+- ~~**`Inbox.tsx:32` vs `Inbox.tsx:387`**~~ — _fixed: outer `label` mutation passed as prop to `Detail`; inner `useLabel()` removed; `label.error` shown below note save button_
 
 ## MEDIUM
 
