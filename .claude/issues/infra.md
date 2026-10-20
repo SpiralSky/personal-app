@@ -3,8 +3,8 @@ _Cross-cutting: CI/CD, testing, deps, config, project structure_
 
 ## HIGH
 
-- **No CI/CD** — No `.github/workflows/` or equivalent. Lint, test, and build never run automatically. Regressions land silently.
-- **No frontend tests** — `package.json` has no test script, no Vitest/Jest config. All 9 pages have zero automated coverage.
+- ~~**No CI/CD**~~ — _fixed: `.github/workflows/ci.yml` with 4 jobs: backend-test (pytest), frontend-test (vitest), frontend-build (tsc+vite), frontend-lint (eslint)_
+- ~~**No frontend tests**~~ — _fixed: Vitest installed, `vitest.config.ts` added, 12 tests for `format.ts`_
 - **No coverage tooling** — `pytest-cov` not in dev deps; no `.coveragerc` or threshold. Coverage unknown and unchecked.
 
 ## MEDIUM
@@ -13,7 +13,7 @@ _Cross-cutting: CI/CD, testing, deps, config, project structure_
 - **No `.env.example`** — No authoritative template for contributors; README text and actual `config.py` keys can drift apart.
 - **No type checker configured** — No `pyrightconfig.json` or `mypy.ini`; `py.typed` marker exists but nothing enforces types locally or in CI.
 - **`setup.sh`** — Passes `--no-audit` to npm; silently skips CVE scanning on frontend deps.
-- **`HANDOFF.md` committed** — Contains local paths, dev planning notes, DB backup locations. Not appropriate for version-controlled history; move to a local scratch file or gitignore it.
+- ~~**`HANDOFF.md` committed**~~ — _fixed: removed from git history via filter-repo, added to `.gitignore`_
 - **No structured logging standard** — Log format, level config, and correlation IDs unspecified across the backend service.
 
 ## LOW
