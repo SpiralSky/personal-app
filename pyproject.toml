@@ -25,6 +25,7 @@ campus-kde = "campus_assistant.kde_app:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--cov=campus_assistant --cov-report=term-missing"
 
 [build-system]
 requires = ["uv_build>=0.12.4,<0.13.0"]
@@ -34,4 +35,5 @@ build-backend = "uv_build"
 dev = [
     "httpx>=0.28.1",
     "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
 ]

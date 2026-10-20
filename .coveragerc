@@ -1,0 +1,14 @@
+[run]
+source = campus_assistant
+omit =
+    */kde_app.py
+    */cli.py
+
+[report]
+fail_under = 60
+show_missing = true
+skip_covered = false
+
+[paths]
+source =
+    src/campus_assistant
