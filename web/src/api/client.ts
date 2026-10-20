@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNotifyError } from '../notify'
 import type {
   AuthState, Category, Change, ErrorsData, Eval, HistoryEntry, Item, ItemDetail, Label,
   LLMProviderConfig, Priority, SettingsData, Status, Task, TriageRow,
@@ -141,6 +142,7 @@ export const useErrors = () =>
 
 export function useLabel() {
   const qc = useQueryClient()
+  const notify = useNotifyError()
   return useMutation({
     mutationFn: (v: { id: string; category: Category | null; priority: Priority | null; note?: string | null }) =>
       post<Label>(`${itemPath(v.id)}/label`, { category: v.category, priority: v.priority, note: v.note ?? null }),
@@ -156,14 +158,17 @@ export function useLabel() {
       qc.invalidateQueries({ queryKey: ['item', v.id] })
       qc.invalidateQueries({ queryKey: ['eval'] })
     },
+    onError: (e: Error) => notify(e.message),
   })
 }
 
 function useAction<T = unknown, V = void>(fn: (v: V) => Promise<T>, invalidate: string[][]) {
   const qc = useQueryClient()
+  const notify = useNotifyError()
   return useMutation({
     mutationFn: fn,
     onSuccess: () => invalidate.forEach((queryKey) => qc.invalidateQueries({ queryKey })),
+    onError: (e: Error) => notify(e.message),
   })
 }
 

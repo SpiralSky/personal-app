@@ -194,7 +194,7 @@ export default function Inbox() {
             </ul>
           </QueryState>
         </Card>
-        {row ? <Detail row={row} onLabel={apply} saving={label.isPending} /> : null}
+        {row ? <Detail row={row} onLabel={apply} label={label} /> : null}
       </div>
     </div>
   )
@@ -376,15 +376,14 @@ function FilterChip({ children, onRemove }: { children: React.ReactNode; onRemov
   )
 }
 
-function Detail({ row, onLabel, saving }: {
+function Detail({ row, onLabel, label }: {
   row: TriageRow
   onLabel: (r: TriageRow, patch: { category?: Category; priority?: Priority }, advance: boolean) => void
-  saving: boolean
+  label: ReturnType<typeof useLabel>
 }) {
   const item = useItem(row.id)
   const t = row.triage
   const clf = t.classification
-  const label = useLabel()
   const [note, setNote] = useState(row.label_note ?? '')
   useEffect(() => setNote(row.label_note ?? ''), [row.id, row.label_note])
 
@@ -427,7 +426,7 @@ function Detail({ row, onLabel, saving }: {
         )}
       </Card>
 
-      <Card title="Label" actions={saving && <span className="text-xs text-slate-500">saving…</span>}>
+      <Card title="Label" actions={label.isPending && <span className="text-xs text-slate-500">saving…</span>}>
         <div className="space-y-2">
           <div className="flex flex-wrap gap-1.5">
             {CATEGORIES.map((c, i) => (
@@ -456,6 +455,7 @@ function Detail({ row, onLabel, saving }: {
               Save note
             </Button>
           </div>
+          {label.isError && <p className="text-xs text-red-600">{label.error.message}</p>}
           <p className="text-xs text-slate-500">
             Dashed = model's answer{clf ? ' (with classifier confidence)' : ''}. Keys: j/k move · 1–8 category · q/w/e/r priority (next) · Enter accept (next).
           </p>

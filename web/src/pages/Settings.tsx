@@ -56,25 +56,15 @@ function TaskRow({ task, info, fallbackModel }: { task: string; info: LLMTask | 
   }
 
   const handleSave = () => {
-    if (config.providerType === 'custom') {
-      save.mutate({
-        task,
-        custom: {
-          endpoint: config.endpoint,
-          model: config.model,
-          api_key: config.apiKey || undefined,
-          thinking: config.thinking,
-        },
-      })
-    } else {
-      save.mutate({ task, preset: config.providerType })
-    }
-    setEditing(false)
+    const payload = config.providerType === 'custom'
+      ? { task, custom: { endpoint: config.endpoint, model: config.model, api_key: config.apiKey || undefined, thinking: config.thinking } }
+      : { task, preset: config.providerType }
+    save.mutate(payload, { onSuccess: () => setEditing(false) })
   }
 
   const handleCancel = () => {
     setEditing(false)
-    // Reset to current values
+    save.reset()
     setConfig({
       providerType: (info?.provider as ProviderType) ?? 'off',
       endpoint: info?.endpoint || info?.url || 'http://127.0.0.1:8080/v1',
@@ -185,9 +175,12 @@ function TaskRow({ task, info, fallbackModel }: { task: string; info: LLMTask | 
                         onClick={handleFetchModels}
                         disabled={!config.endpoint || config.fetchingModels}
                       >
-                        {config.fetchingModels ? 'Fetching...' : 'Fetch Models'}
+                        {config.fetchingModels ? 'Fetching…' : 'Fetch Models'}
                       </Button>
                     </div>
+                    {fetchModels.isError && (
+                      <p className="mt-1 text-xs text-red-600">{fetchModels.error.message}</p>
+                    )}
                   </div>
                 </div>
               )}
@@ -214,12 +207,15 @@ function TaskRow({ task, info, fallbackModel }: { task: string; info: LLMTask | 
                   onClick={handleSave}
                   disabled={save.isPending || (config.providerType === 'custom' && (!config.endpoint || !config.model))}
                 >
-                  Save
+                  {save.isPending ? 'Saving…' : 'Save'}
                 </Button>
                 <Button onClick={handleCancel} variant="ghost">
                   Cancel
                 </Button>
               </div>
+              {save.isError && (
+                <p className="text-sm text-red-600">{save.error.message}</p>
+              )}
             </div>
           </td>
         </tr>
