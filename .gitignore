@@ -8,3 +8,5 @@ web/dist/
 HANDOFF.md
 research_notes/
 reports/
+.coverage
+htmlcov/
