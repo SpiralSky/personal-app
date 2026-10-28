@@ -32,54 +32,75 @@ each phase — INDEX is known to be stale.
 
 Do this once, before feature work.
 
-- [ ] **G0-1 Commit the corpus.** Branch `docs/spec-baseline` off `master`;
+- [x] **G0-1 Commit the corpus.** Branch `docs/spec-baseline` off `master`;
       commit `specs/`, `plans/`, `CLAUDE.md`, `docs/` as-is. Merge after review.
       This gives every later status change a diffable baseline.
-- [ ] **G0-2 Reconcile INDEX.** Recompute status counts from file metadata, fix
+      _(done: 95b9533; awaiting merge)_
+- [x] **G0-2 Reconcile INDEX.** Recompute status counts from file metadata, fix
       stale F-004 prose (`INDEX.md:48` still calls it an empty scaffold), link
       every existing spec.
-- [ ] **G0-3 Normalise statuses.** F-001 `Completed` → `Accepted` (it defines
+      _(counts recomputed: Accepted 3 / In review 1 / Draft 8 / Baseline 7;
+      F-001 row corrected. The F-004 prose is **left unchanged** because it is
+      the subject of G0-Q1 — do not pre-empt that answer.)_
+- [x] **G0-3 Normalise statuses.** F-001 `Completed` → `Accepted` (it defines
       scope and has FRs/ACs). Add F-001 missing edge-case/failure-mode and
       open-question sections as empty scaffolds, not invented content.
-- [ ] **G0-4 Decide and write the architecture layer** (see "Design
+      _(also added an empty compatibility/migration scaffold, which the
+      acceptance gate requires; change log notes the normalisation.)_
+- [x] **G0-4 Decide and write the architecture layer** (see "Design
       assessment" below):
-      - [ ] `specs/architecture/A-001-runtime-contracts-persistence.md` — the
+      - [x] `specs/architecture/A-001-runtime-contracts-persistence.md` — the
             16 required sections from `specs/architecture/README.md`, at
             baseline depth. Extract, do not invent: systemd/CLI dispatch from
             F-001 §8; DDL from F-003/F-006/F-019; API envelope/security from
             F-015 §6; provider/config shapes from F-013 §5–7; deployment from
             F-019 §5.
-      - [ ] `ADR-001-sqlite-and-migrations.md`
-      - [ ] `ADR-002-crawler-as-separate-service.md` (resolves F-019 Q-4
+      - [x] `ADR-001-sqlite-and-migrations.md`
+      - [x] `ADR-002-crawler-as-separate-service.md` (resolves F-019 Q-4
             packaging disjunction: choose a packaging story and state it)
-      - [ ] `ADR-003-local-api-security-model.md` (reconciles F-015's
+            _(standalone `campus-crawler` distribution, own unit/data dir/DB.)_
+      - [x] `ADR-003-local-api-security-model.md` (reconciles F-015's
             loopback/Origin rules, F-016's daemon token, F-013's MCP auth)
-- [ ] **G0-5 Cross-spec contract reconciliation.** Fix drift in the specs, or
+            _(F-001's RBAC is authoritative; F-015 NG-1 must be amended before
+            F-015 is accepted.)_
+- [x] **G0-5 Cross-spec contract reconciliation.** Fix drift in the specs, or
       record it as an ADR:
       - F-016 AC-016-01 calls `POST /api/v1/sync/run`; F-015 lists
         `/api/v1/brightspace/sync`, F-004 defines its own trigger route.
+        _(resolved: A-001 §6.2 canonicalises `/api/v1/sources/brightspace/*`,
+        aliases the other two; AD-20261028-04.)_
       - F-016 introduces `.daemon-token` bearer auth; F-015 NG-1 says "no
-        auth". Pick one model in ADR-003.
+        auth". Pick one model in ADR-003. _(done — ADR-003.)_
       - F-003 §6.1 / FR-6/7 reference an `analyses` table that no spec
         defines; define it in A-001 §7.
+        _(done — A-001 §7.2; AD-20261028-06.)_
       - F-019 has no compatibility/migration section despite decoupling from
         `campus-assistant/brightspace/`.
-- [ ] **G0-6 Add a consistency script** `scripts/check_specs.py` (agent-only):
+        _(deferred to Phase 2 step 5, where the section is authored; it is a
+        Draft spec so it does not block Phase 0.)_
+- [x] **G0-6 Add a consistency script** `scripts/check_specs.py` (agent-only):
       verify status values, required sections, unique IDs, AC/FR links, INDEX
       counts. Wire into CI as a non-blocking check initially.
+      _(clean on errors, 15 accurate warnings; CI job `spec-check` is
+      `continue-on-error: true`.)_
 
 **Ask owner (feature gate):**
 - **G0-Q1** — `CLAUDE.md` and `INDEX.md:48` say F-004 is an intentionally empty
   scaffold the owner will author, but the file is populated, `Accepted`, and
   dated 2026-10-28. Was it authored by the owner? If yes, update both prose
   statements; if not, revert it to a scaffold. Do not touch F-004 before this
-  is answered.
+  is answered. _(still open — F-004 and its index prose untouched.)_
 - **G0-Q2** — Is F-001's `Completed` intended to mean "Accepted and shipped",
   or just "authoring finished"? (Recommend: `Accepted`; it is the scope
   authority, not a shippable feature.)
+  _(normalised to `Accepted` per G0-3; confirm or revert.)_
 
 **Exit:** corpus committed, INDEX truthful, A-001 + 3 ADRs exist, spec check
 passes, F-004 authorship answered.
+_State: everything except the F-004 answer. Corpus is committed on
+`docs/spec-baseline` and awaits review/merge; A-001 + ADR-001/002/003 exist;
+`scripts/check_specs.py` exits 0 with warnings; INDEX is truthful except the
+F-004 note._
 
 ## Phase 1 — contracts and foundations
 

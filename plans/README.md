@@ -68,8 +68,13 @@ one-word approvals.
 
 Never implement against a Draft spec whose FRs are still `proposal`-sourced.
 
-## Current repo caveat
+## Current repo state
 
-`specs/` is currently untracked and `CLAUDE.md` is modified on branch
-`feat/coverage-tooling`. The first task in the roadmap is to commit the spec
-corpus on its own branch so later status changes have a clean baseline.
+`specs/`, `plans/`, `docs/` and the updated `CLAUDE.md`/`README.md` are committed
+on branch `docs/spec-baseline` (commit `95b9533`), pending review and merge.
+Phase 0 is complete except the owner answer to G0-Q1 (F-004 authorship) and
+confirmation of G0-Q2 (F-001 status). Start there before touching F-004.
+
+`python scripts/check_specs.py` is the structural gate; it currently exits 0
+with warnings (missing sections in Draft specs, F-001's empty scaffolds).
+CI runs it non-blocking until `--strict` is clean.

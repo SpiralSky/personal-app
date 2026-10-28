@@ -85,3 +85,19 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+  spec-check:
+    runs-on: ubuntu-latest
+    # Non-blocking while the corpus is reconciled (roadmap G0-6). Promote to a
+    # required check once `python scripts/check_specs.py --strict` is clean.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Check spec corpus structure
+        run: python scripts/check_specs.py

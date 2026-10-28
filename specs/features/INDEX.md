@@ -6,9 +6,9 @@ Registry of feature specs. **Status is authoritative only when a file exists and
 
 | Status | Count |
 |---|---:|
-| Accepted | 2 |
+| Accepted | 3 |
 | In review | 1 |
-| Draft | 9 |
+| Draft | 8 |
 | Baseline (needs spec) | 7 |
 | Superseded | 0 |
 
@@ -16,7 +16,7 @@ Registry of feature specs. **Status is authoritative only when a file exists and
 
 | ID | Feature | Status | Priority | Current surface | Notes / questions the spec must answer |
 |---|---|---|---|---|---|
-| F-001 | [Product scope and supported surfaces](F-001-product-scope-surfaces.md) | Draft | High | Web, CLI, KDE tray, Plasma widget | Single-user loopback architecture, surface tiers (Tier 1 Web/CLI/MCP vs Tier 2 KDE/iCal), headless runtime, and explicit non-goals |
+| F-001 | [Product scope and supported surfaces](F-001-product-scope-surfaces.md) | Accepted | High | Web, CLI, KDE tray, Plasma widget | Single-user loopback architecture, surface tiers (Tier 1 Web/CLI/MCP vs Tier 2 KDE/iCal), headless runtime, and explicit non-goals |
 | F-002 | [Canonical item and source taxonomy](F-002-canonical-item-taxonomy.md) | Accepted | High | `models.py`, `brightspace/normalize.py`, `mail.py` | Universal Item model, hierarchical source taxonomy, kind definitions, identity construction, and UTC date normalization |
 | F-003 | [Change tracking and history](F-003-change-tracking-history.md) | Draft | High | `store.py` | Content-hash change detection, historical version snapshots (`item_history`), field-level diff logs (`changes`), and soft-deletion |
 | F-004 | [Brightspace sync and crawler integration](F-004-automatic-brightspace-sync.md) | Accepted | High | `brightspace/`, `runner.py`, Sources/Settings | Integration with standalone F-019 crawler daemon over REST API; on-demand item referencing without database duplication; proxying sync triggers and mutations |

@@ -1,6 +1,20 @@
 # Architecture specifications
 
-This directory is reserved for the architecture specification and its decision records. It is intentionally empty of decisions until the architecture has been written and vetted.
+This directory holds the architecture baseline and its decision records. The
+feature specs define behaviour; this layer defines structure and contracts.
+
+## Inventory
+
+| ID | Document | Status |
+|---|---|---|
+| A-001 | [Runtime contracts and persistence](A-001-runtime-contracts-persistence.md) | Accepted |
+| ADR-001 | [SQLite and forward-only migrations](ADR-001-sqlite-and-migrations.md) | accepted |
+| ADR-002 | [Crawler as a separate service](ADR-002-crawler-as-separate-service.md) | accepted |
+| ADR-003 | [Local API security model](ADR-003-local-api-security-model.md) | accepted |
+
+A-001 covers all sixteen required sections below in one readable file. Split it
+only when a section outgrows a sitting (>250 lines or two independent owners),
+as `A-002-persistence`, `A-003-api-security`, `A-004-intelligence`.
 
 ## Purpose
 
@@ -52,4 +66,9 @@ A model-vetted architecture claim is not evidence. Every non-obvious claim shoul
 - a code reference;
 - or an explicit decision that cannot yet be verified.
 
-This repository already contains examples of documentation claiming fixes that were never implemented (see Appendix B of the assessment). Treat prose as untrusted until verified.
+A-001 tags unverified decisions **[target]**. This repository already contains
+examples of documentation claiming fixes that were never implemented (see
+Appendix B of the assessment). Treat prose as untrusted until verified.
+
+Structural health of the corpus (status values, required sections, IDs, INDEX
+counts, links) is checked by `scripts/check_specs.py` (roadmap G0-6).

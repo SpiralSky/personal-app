@@ -1,11 +1,11 @@
 # Product scope and supported surfaces
 
-> **Specification state.** Draft establishing runtime boundaries, supported client tiers (Web UI, CLI, MCP Server, KDE Integration), multi-profile single-tenant architecture, user lock screens, Role-Based Access Control (RBAC), platform packaging, and explicit non-goals.
+> **Specification state.** Accepted; establishes runtime boundaries, supported client tiers (Web UI, CLI, MCP Server, KDE Integration), multi-profile single-tenant architecture, user lock screens, Role-Based Access Control (RBAC), platform packaging, and explicit non-goals.
 
 | Field | Value |
 |---|---|
 | ID | F-001 |
-| Status | Completed |
+| Status | Accepted |
 | Owner | spiralsky |
 | Created | 2026-10-27 |
 | Last updated | 2026-10-28 |
@@ -188,7 +188,11 @@ flowchart TD
 
 ---
 
-## 9. Supported target environments
+## 9. Edge cases and failure modes
+
+_Scaffold: to be completed. No entries yet — this section is reserved for owner-authored edge cases (for example lock-screen bypass, token expiry during a session, desktop component absence, and concurrent CLI/daemon access)._
+
+## 10. Supported target environments
 
 | Operating System | Architecture | Support Status | Notes |
 |---|---|---|---|
@@ -199,7 +203,7 @@ flowchart TD
 
 ---
 
-## 10. Non-functional requirements
+## 11. Non-functional requirements
 
 | Area | Requirement |
 |---|---|
@@ -210,7 +214,7 @@ flowchart TD
 
 ---
 
-## 11. Acceptance criteria
+## 12. Acceptance criteria
 
 | ID | Given | When | Then | Test level |
 |---|---|---|---|---|
@@ -221,9 +225,18 @@ flowchart TD
 
 ---
 
-## 12. Change log
+## 13. Compatibility and migration
+
+_Scaffold: to be completed. No entries yet — this section is reserved for how the authentication/RBAC model and surface tiering change the current unauthenticated loopback behaviour._
+
+## 14. Open questions and decisions
+
+_Scaffold: to be completed. No entries yet._
+
+## 15. Change log
 
 | Date | Change | By |
 |---|---|---|
 | 2026-10-27 | Initial comprehensive specification draft for F-001. | spiralsky |
 | 2026-10-27 | Updated to incorporate local multi-user/multi-profile architecture, lock screen, and RBAC roles (`owner`, `student`, `agent`, `guest`). | spiralsky |
+| 2026-10-28 | Corpus hygiene: invalid status `Completed` normalised to `Accepted`; empty scaffolds added for edge cases, compatibility/migration and open questions. No behavioural change. | agent |
