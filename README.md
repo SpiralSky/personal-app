@@ -1,5 +1,10 @@
 # campus-assistant
 
+> **Documentation map.** This README describes the current implementation. Desired behaviour is
+> specified in [`specs/`](specs/README.md); where they conflict, the specs win. Start with the
+> [codebase assessment](docs/codebase-assessment.md) and the
+> [feature index](specs/features/INDEX.md).
+
 Local backend that collects Brightspace (POLITEMall / SP LMS) and Outlook mail
 into one SQLite store, tracks what changed, and serves it over a local API.
 
