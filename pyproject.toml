@@ -4,13 +4,14 @@ version = "0.1.0"
 description = "Local study assistant: Brightspace sync, mail ingest, deadlines API"
 readme = "README.md"
 authors = [
-    { name = "spiralsky", email = "shianastrophysics@gmail.com" }
+    { name = "spiralsky" }
 ]
 requires-python = ">=3.14"
 dependencies = [
     "anthropic>=1.12.1",
     "fastapi>=0.142.4",
     "httpx>=0.28.1",
+    "mcp>=1.26,<2",
     "playwright>=1.63.0",
     "pydantic>=2.13.5",
     "pypdf>=6.19.0",
@@ -22,6 +23,7 @@ dependencies = [
 [project.scripts]
 campus = "campus_assistant.cli:main"
 campus-kde = "campus_assistant.kde_app:main"
+campus-mcp = "campus_assistant.mcp_server:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

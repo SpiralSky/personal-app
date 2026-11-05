@@ -413,17 +413,20 @@ class Store:
         return [self._row_dict(r) for r in rows]
 
     def changes(self, since: str | None = None, limit: int = 200,
-                include_created: bool = True) -> list[dict[str, Any]]:
+                include_created: bool = True, source: str | None = None, offset: int = 0) -> list[dict[str, Any]]:
         sql = """SELECT c.id, c.item_id, c.at, c.change, c.fields, i.source, i.kind, i.title, i.course_name, i.due_at
                  FROM changes c LEFT JOIN items i ON i.id = c.item_id WHERE 1=1"""
         args: list[Any] = []
+        if source:
+            sql += " AND (i.source = ? OR i.source LIKE ?)"
+            args.extend([source, f"{source}:%"])
         if since:
             sql += " AND c.at > ?"
             args.append(since)
         if not include_created:
             sql += " AND c.change != 'created'"
-        sql += " ORDER BY c.id DESC LIMIT ?"
-        rows = self.conn.execute(sql, (*args, limit)).fetchall()
+        sql += " ORDER BY c.id DESC LIMIT ? OFFSET ?"
+        rows = self.conn.execute(sql, (*args, limit, offset)).fetchall()
         return [{**dict(r), "fields": json.loads(r["fields"])} for r in rows]
 
     def stats(self) -> list[dict[str, Any]]:

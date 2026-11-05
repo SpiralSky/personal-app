@@ -28,7 +28,15 @@ fi
 # ── 2. Install the .desktop launcher ──────────────────────────────────────────
 echo "Installing .desktop launcher..."
 mkdir -p "$APPLICATIONS_DIR"
-cp "$DESKTOP_SRC" "$APPLICATIONS_DIR/personal-app.desktop"
+python3 - "$DESKTOP_SRC" "$APPLICATIONS_DIR/personal-app.desktop" "$SCRIPT_DIR/app/launch.sh" <<'PY'
+from pathlib import Path
+import sys
+
+source, destination, launcher = sys.argv[1:]
+# Escape a quoted Desktop Entry Exec argument, including literal field-code markers.
+launcher = launcher.replace('\\', '\\\\\\\\').replace('"', '\\\\"').replace('`', '\\\\`').replace('$', '\\\\$').replace('%', '%%')
+Path(destination).write_text(Path(source).read_text().replace('@LAUNCHER@', launcher))
+PY
 echo "  Installed to $APPLICATIONS_DIR/personal-app.desktop"
 
 # ── 3. Ensure campus-kde is on PATH (uv-managed venv) ─────────────────────────

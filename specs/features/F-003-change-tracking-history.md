@@ -211,7 +211,7 @@ CREATE TABLE changes (
 ## 11. Compatibility and migration
 
 - **Breaking:** No.
-- **What changes:** Preserves and formalizes the existing `Store` implementation in [`store.py`](file:///home/spiralsky/projects/apps/personal-app/src/campus_assistant/store.py).
+- **What changes:** Preserves and formalizes the existing `Store` implementation in [`store.py`](../../src/campus_assistant/store.py).
 - **Existing data:** Current SQLite tables `items`, `item_history`, and `changes` are 100% compliant with this specification.
 
 ---

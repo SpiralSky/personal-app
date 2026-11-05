@@ -6,3 +6,27 @@ web/node_modules/
 web/dist/
 *.AppImage
 HANDOFF.md
+.coverage
+.coverage.*
+htmlcov/
+dist/
+.env
+.env.*
+!.env.example
+
+# Machine-local client configuration and credentials
+.mcp.json
+.claude/settings.local.json
+.aws/
+*.pem
+*.key
+
+# Runtime data, including custom CAMPUS_DATA_DIR locations
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+session-state.json
+browser-profile/
+data/

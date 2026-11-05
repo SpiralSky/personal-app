@@ -8,6 +8,22 @@
 Local backend that collects Brightspace (POLITEMall / SP LMS) and Outlook mail
 into one SQLite store, tracks what changed, and serves it over a local API.
 
+**Sharing Brightspace MCP:** follow the [setup and sharing guide](docs/brightspace-mcp.md).
+Run `python3 scripts/package_brightspace.py` to create `dist/brightspace-mcp.zip`
+with the MCP bridge and its required backend, excluding local configuration and data.
+
+## Workspace map
+
+| Location | Purpose |
+|---|---|
+| `src/`, `tests/` | Python backend, MCP bridge, and tests |
+| `web/`, `kde/` | Web and desktop interfaces |
+| `docs/` | Current implementation assessments and operational guides |
+| `specs/`, `plans/` | Product requirements, architecture, and rewrite plans |
+| `research_notes/`, `reports/` | Research inputs and summaries |
+| `scripts/`, `examples/` | Maintenance tools and portable configuration examples |
+| `dist/` (ignored) | Generated sharing bundles |
+
 ## Setup
 
 Needs Linux with a desktop session, [uv](https://docs.astral.sh/uv/) and Node.js 20+.
@@ -55,6 +71,45 @@ Data: `~/.local/share/campus-assistant/` (database, downloaded files, browser pr
 Settings: `~/.config/campus-assistant/env` — restart the service after editing.
 
 ## Sources
+
+### Brightspace through MCP / ChatGPT
+
+The read-only bridge is available now, independently of the web UI. It uses the
+existing Campus daemon's HTTP API; this is an interim adapter, not the standalone
+`campus-crawler` distribution described in ADR-002. Keep `campus service` running.
+
+```bash
+uv run campus-mcp                         # stdio for local MCP clients
+uv run campus-mcp --install-service       # persistent loopback HTTP at :8766/mcp
+systemctl --user status campus-brightspace-mcp
+```
+
+Tools: `brightspace_status`, `list_courses`, `upcoming_deadlines`, `search_items`,
+`get_item`, `recent_changes`. They expose Brightspace records only, with pagination,
+source URLs and freshness metadata. Search covers titles/bodies, not extracted file
+contents. Raw payloads, local file paths and Outlook mail are excluded. There are no
+sync, login, settings, submission or other write tools. Status may report stale data
+or a failed sync; an empty deadline list is not proof that nothing is due.
+
+For ChatGPT web, connect this local endpoint using a **Secure MCP Tunnel**. Create
+a tunnel in Platform, associate the intended ChatGPT workspace, and configure the
+official `tunnel-client` with `http://127.0.0.1:8766/mcp` (or the stdio command above).
+The tunnel needs a runtime key with Tunnels Read + Use. Enter credentials locally,
+never in this repo. Run `tunnel-client doctor`, keep the tunnel client running, then
+in ChatGPT Plugins choose **Add custom MCP server → Tunnel**, select that tunnel,
+and install the resulting personal plugin. Verify by calling `brightspace_status`.
+See [official tunnel setup](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels).
+Account/workspace permissions apply; local MCP tests do not establish ChatGPT connectivity.
+
+The bridge binds only to loopback and has no application-level authentication; it
+is intended for trusted local clients or your private tunnel. Do not publicly
+forward either port 8765 or 8766. The computer, Campus service and tunnel must be
+running for ChatGPT access. Brightspace MFA remains interactive (`uv run campus login`).
+Scheduled sync remains the Campus daemon's responsibility; MCP does not send alerts.
+
+After relocating this checkout, run `./setup.sh --service` to refresh the editable
+Python installation and service paths. Update the absolute project path in `.mcp.json`
+if using that local-client configuration.
 
 | Source | How | Kinds |
 |---|---|---|

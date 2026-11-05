@@ -81,10 +81,20 @@ def create_app(cfg: Config | None = None, store: Store | None = None, schedule: 
     def status():
         return {"stats": store.stats(), "auth": {"brightspace": runner.auth()},
                 "sync": {"busy": runner.activity,
-                         "last": runner.last_sync.as_dict() if runner.last_sync else None},
+                         "last": runner.last_sync.as_dict() if runner.last_sync else store.get_meta("brightspace:last_sync")},
                 "analysis": {"auto": analysis.enabled, "running": analysis.running, "last": analysis.last}}
 
     # ── Ingest (used by the Outlook fork and any other pushers) ──────────────
+    @app.get("/brightspace/status")
+    def brightspace_status():
+        observations = [dict(r) for r in store.conn.execute(
+            "SELECT source, MAX(last_seen) AS last_seen FROM items "
+            "WHERE source LIKE 'brightspace:%' GROUP BY source")]
+        return {"auth": runner.auth(), "busy": runner.activity,
+                "last_sync": store.get_meta("brightspace:last_sync"),
+                "observations": observations,
+                "counts": [r for r in store.stats() if r["source"].startswith("brightspace:")]}
+
     @app.post("/ingest")
     async def ingest(req: IngestRequest):
         counts = store.upsert_many(req.items)
@@ -152,8 +162,9 @@ def create_app(cfg: Config | None = None, store: Store | None = None, schedule: 
         return rows
 
     @app.get("/changes")
-    def changes(since: str | None = None, limit: int = Query(200, le=2000), include_created: bool = True):
-        return store.changes(since=since, limit=limit, include_created=include_created)
+    def changes(since: str | None = None, limit: int = Query(200, ge=1, le=2000), include_created: bool = True,
+                source: str | None = None, offset: int = Query(0, ge=0)):
+        return store.changes(since=since, limit=limit, include_created=include_created, source=source, offset=offset)
 
     @app.get("/calendar.ics", response_class=PlainTextResponse)
     def calendar():
@@ -165,6 +176,7 @@ def create_app(cfg: Config | None = None, store: Store | None = None, schedule: 
     def triage(days: int = 14, categories: str | None = None, priorities: str | None = None,
                kinds: str | None = None, date_from: str | None = None, date_to: str | None = None,
                include_ignored: bool = False, needs_review: bool | None = None,
+               category: str | None = None, priority: str | None = None, kind: str | None = None,
                limit: int = Query(200, le=1000)):
         """Triaged emails/announcements, newest first. Your labels override the model.
 
@@ -185,6 +197,7 @@ def create_app(cfg: Config | None = None, store: Store | None = None, schedule: 
             since = (datetime.now(UTC) - timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
             until = None
 
+        categories, priorities, kinds = categories or category, priorities or priority, kinds or kind
         category_list = [c.strip() for c in categories.split(",")] if categories else None
         priority_list = [p.strip() for p in priorities.split(",")] if priorities else None
         kind_list = [k.strip() for k in kinds.split(",")] if kinds else None

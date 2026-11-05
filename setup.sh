@@ -26,7 +26,7 @@ node -e 'process.exit(+process.versions.node.split(".")[0] < 20 ? 1 : 0)' \
   || { echo "Node.js 20+ required (found $(node -v))." >&2; exit 1; }
 
 step "Python environment (uv sync)"
-uv sync
+uv sync --reinstall-package campus-assistant
 
 step "Browser for Brightspace sync (Playwright Chromium)"
 # Without system libraries this may fail on minimal distros; see `uv run playwright install --help` (--with-deps).
@@ -39,8 +39,13 @@ if [[ $want_service == 1 ]]; then
   step "Background service"
   uv run campus service install
 elif [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/campus-assistant.service" ]]; then
-  step "Restarting background service to pick up changes"
-  uv run campus service restart
+  step "Refreshing background service paths and restarting"
+  uv run campus service install
+fi
+
+if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/campus-brightspace-mcp.service" ]]; then
+  step "Refreshing Brightspace MCP service"
+  uv run campus-mcp --install-service
 fi
 
 cat <<'EOF'

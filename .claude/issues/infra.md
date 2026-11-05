@@ -18,6 +18,8 @@ _Cross-cutting: CI/CD, testing, deps, config, project structure_
 
 ## LOW
 
+- ~~**No shareable Brightspace MCP bundle**~~ — _fixed: `scripts/package_brightspace.py` packages the bridge and required backend with a recipient guide and portable MCP example; excludes local configuration and runtime data._
+
 - No `CHANGELOG.md` or `CONTRIBUTING.md`.
 - `research_notes/` and `reports/` in the repo will accumulate and inflate history. Better in a wiki or separate branch.
 - `setup.sh` is not idempotent; re-running can break an existing install.

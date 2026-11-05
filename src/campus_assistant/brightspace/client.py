@@ -90,8 +90,8 @@ class BrightspaceClient:
         while True:
             page = await self.get_json(f"/d2l/api/lp/{self.lp}/enrollments/myenrollments/",
                                        {"orgUnitTypeId": 3, "bookmark": bookmark})
-            if not page:
-                break
+            if page is None:
+                raise RuntimeError("Enrollment fetch incomplete; preserving cached courses")
             items += page.get("Items") or []
             paging = page.get("PagingInfo") or {}
             if not paging.get("HasMoreItems"):
@@ -111,7 +111,7 @@ class BrightspaceClient:
         while url:
             page = await self.get_json(url)
             if page is None:
-                return None if not out else out
+                return None
             out += page.get("Objects") or []
             url = page.get("Next")
         return out

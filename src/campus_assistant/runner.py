@@ -68,6 +68,10 @@ class BrightspaceRunner:
             self.activity = "sync"
             try:
                 report = await sync_brightspace(self.store, self.cfg)
+            except Exception as err:
+                report = SyncReport(finished_at=now_iso(), errors=[f"Sync failed: {err}"])
+                for host in self.cfg.bs_hosts:
+                    self._set_auth(host, "unknown", detail="Sync could not start; inspect last_sync errors")
             finally:
                 self.activity = None
             for host, info in report.hosts.items():
@@ -75,6 +79,7 @@ class BrightspaceRunner:
             for host in report.login_required:
                 self._set_auth(host, "login_required", detail="Session expired; sign in again")
             self.last_sync = report
+            self.store.set_meta("brightspace:last_sync", report.as_dict())
             log.info("Brightspace sync: %s", dict(report.counts))
             if report.hosts:
                 for hook in self.after_sync:
