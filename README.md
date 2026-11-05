@@ -1,12 +1,37 @@
-# campus-assistant
+# Campus Assistant — Brightspace MCP and Study Dashboard
+
+Campus Assistant is a local study assistant for **D2L Brightspace**, with a
+read-only **Model Context Protocol (MCP) server**, a deadlines dashboard, and
+Outlook email ingestion. It syncs course information into SQLite and exposes it
+through a local FastAPI backend, a React web interface, and compatible MCP clients.
+
+Currently configured for Singapore Polytechnic / POLITEMall. Other Brightspace
+institutions can be configured but have not been verified.
+
+[Get started](#setup) · [Share or run Brightspace MCP](docs/brightspace-mcp.md) ·
+[Workspace map](#workspace-map) · [Feature specifications](specs/features/INDEX.md)
+
+## What it does
+
+- Sync courses, assignments, quizzes, announcements, content, events, and grades
+  using your own interactive Brightspace login.
+- Query cached courses, deadlines, item details, and recent changes through six
+  read-only MCP tools, with source URLs and freshness information.
+- Browse deadlines and tasks in a local web dashboard, with optional KDE integration.
+- Ingest Outlook mail and optionally use configured LLM providers for triage and study briefs.
+
+The MCP bridge runs separately but requires the Campus backend for login, sync,
+and storage. The [shareable source bundle](docs/brightspace-mcp.md) includes both;
+recipients sign in with their own accounts. The web UI is optional for MCP use.
+
+Data is stored locally by default. Optional LLM providers may receive content when
+analysis is enabled. The local API and MCP HTTP endpoint have no application-level
+authentication and should not be exposed publicly.
 
 > **Documentation map.** This README describes the current implementation. Desired behaviour is
 > specified in [`specs/`](specs/README.md); where they conflict, the specs win. Start with the
 > [codebase assessment](docs/codebase-assessment.md) and the
 > [feature index](specs/features/INDEX.md).
-
-Local backend that collects Brightspace (POLITEMall / SP LMS) and Outlook mail
-into one SQLite store, tracks what changed, and serves it over a local API.
 
 **Sharing Brightspace MCP:** follow the [setup and sharing guide](docs/brightspace-mcp.md).
 Run `python3 scripts/package_brightspace.py` to create `dist/brightspace-mcp.zip`
