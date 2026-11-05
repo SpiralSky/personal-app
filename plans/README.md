@@ -31,7 +31,7 @@ the agent's call.
 - Logging every non-trivial architecture decision in
   [decisions.md](decisions.md) with context/alternatives/consequence.
 - Git: branch per task (`feat/…`, `fix/…`, `docs/…`), small logical commits,
-  squash fixups, merge to `master` once clean and tested.
+  squash fixups, merge to `main` once clean and tested.
 
 ### Stop and ask the owner (feature gate)
 
